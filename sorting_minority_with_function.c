@@ -1,44 +1,68 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 
-int CM[26] ={0,0,0,0,1,1,0,0,0,0,1,1,1,0,0,1,1,1,1,0,0,0,0,1,0,1} ;
-int P[26] ={0,1,1,0,1,0,0,0,1,0,0,0,0,0,0,0,1,0,1,1,1,1,1,1,0,1} ;
-int SC[26] ={0,0,0,1,0,0,0,1,0,0,1,1,1,0,0,1,1,2,0,1,0,0,0,1,1,0} ;
-int S[26] ={0,0,1,0,1,0,0,1,0,1,0,1,1,0,0,1,0,0,0,1,0,0,1,0,1,1} ;
-int SM[26] ={0,0,1,1,0,1,0,1,1,0,0,0,0,0,1,1,0,1,0,1,0,1,0,1,1,1} ;
-int PC[26] ={0,0,1,0,0,0,0,1,1,0,0,0,0,1,1,0,1,1,2,0,0,1,0,0,0,0} ;
-int L[26] ={0,0,0,0,0,0,2,0,0,0,1,0,1,1,1,0,0,0,1,0,1,0,0,1,0,1} ;
 
-void fonction_tri (int PersCho[], int table[]){
-    int e=0, i=0;
-    int Mprece[26] = {0,0,1,0,0,0,0,1,0,0,0,0,1,0,1,0,0,1,0,1,0,0,0,0,1,0} ;
+#define NB_STUDENT 25
+#define NB_JOB 7
 
-    for(e=0; e<26; e++){
-         if(table[e] < table[0])
-            table[0] = table[e];
-    }
+#define CM 0
+#define P 1
+#define SC 2
+#define S 3
+#define SM 4
+#define PC 5
+#define L 6
 
-    for(e=0; e<26; e++){
-        if(table[e] == table[0] && Mprece[e] == 0){
-            PersCho[i-1] = e;
-            i++;
-        }
-    }
 
-    for(e=0; e<26;e++){
-        if(PersCho[e] > PersCho[e-1] && PersCho[e]<=26 && PersCho[e]>0)
-            printf("%d\n", PersCho[e]);
 
-    }
+int arr[NB_JOB][NB_STUDENT] = {{0,0,0,1,1,0,0,0,0,1,1,1,0,0,1,1,1,1,0,0,0,0,1,0,1}, 
+			       {1,1,0,1,0,0,0,1,0,0,0,0,0,0,0,1,0,1,1,1,1,1,1,0,1}, 
+			       {0,0,1,0,0,0,1,0,0,1,1,1,0,0,1,1,2,0,1,0,0,0,1,1,0},
+			       {0,1,0,1,0,0,1,0,1,0,1,1,0,0,1,0,0,0,1,0,0,1,0,1,1},
+			       {0,1,1,0,1,0,1,1,0,0,0,0,0,1,1,0,1,0,1,0,1,0,1,1,1},
+			       {0,1,0,0,0,0,1,1,0,0,0,0,1,1,0,1,1,2,0,0,1,0,0,0,0},
+			       {0,0,0,0,0,2,0,0,0,1,0,1,1,1,0,0,0,1,0,1,0,0,1,0,1} };
+
+void fonction_tri (int persCho[NB_JOB], int arr[][NB_STUDENT])
+{  
+  int j, i, k;
+    for(i=0; i<NB_JOB; i++)
+      {
+	int lazy_student[NB_STUDENT];
+	int min=arr[i][0];
+	for(j=0;j<NB_STUDENT;j++)
+	    if(arr[i][j]<min)
+	      min = arr[i][j];
+	int index = 0;
+	for(j=0;j<NB_STUDENT;j++)
+	    if(arr[i][j]==min)
+	      {
+		int prev=0;
+		for(k=0;k<NB_JOB+i;k++)
+		  if(persCho[k]==j)
+		    prev=1;
+		if(!prev)
+		  lazy_student[index++]=j;
+	      }
+	persCho[NB_JOB+i]=lazy_student[rand()%index];
+	
+      }
+
 }
 
 
 int main()
 {
-    int PersCho[] = {};
+  int persCho[NB_JOB*2]={1,2,3,4,5,6,7};
+    
+  fonction_tri(persCho, arr);
+  
+  int i;
+  for(i=0; i<NB_JOB; i++)
+    printf("job %d => student %d\n", i, persCho[NB_JOB+i]); 
 
-    fonction_tri(PersCho, CM);
-
-
-    return 0;
+  return 0;
 }
+
+
